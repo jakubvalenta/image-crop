@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+
+import csv
+import sys
+import os.path
+import subprocess
+
+import click
+
+
+def process(path, x, y, w, h, suffix, resize_width, resize_height):
+    filename, ext = os.path.splitext(path)
+    cmd = [
+        'gm',
+        'convert',
+        path,
+        '-crop',
+        '{w}x{h}+{x}+{y}'.format(x=x, y=y, w=w, h=h),
+    ]
+    if resize_width or resize_height:
+        cmd += [
+            '-resize',
+            '{rw}x{rh}'.format(rw=resize_width, rh=resize_height),
+        ]
+    cmd += [
+        '{filename}{suffix}{ext}'
+        .format(filename=filename, suffix=suffix, ext=ext),
+    ]
+    print(cmd, file=sys.stderr)
+    subprocess.call(cmd)
+
+
+@click.command()
+@click.option('--suffix', '-s', default='__crop')
+@click.option('--resize-width', '-rw', default='')
+@click.option('--resize-height', '-rh', default='')
+def cli(suffix, resize_width, resize_height):
+    reader = csv.reader(sys.stdin, delimiter=' ')
+
+    for line in reader:
+        path, x, y, w, h = line
+        process(path, x, y, w, h, suffix, resize_width, resize_height)
+
+
+if __name__ == '__main__':
+    cli()
