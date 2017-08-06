@@ -43,7 +43,7 @@ echo '"My Images/DSC-123.JPG" 5 10 600 350' | ./image_crop
 Resulting GraphicsMagic call:
 
 ```
-gm convert "My Images/DSC-123.JPG -crop 600x350+5+10 "My Images/DSC-123__crop.JPG"
+gm convert "My Images/DSC-123.JPG" -crop 600x350+5+10 "My Images/DSC-123__crop.JPG"
 ```
 
 ## More options
@@ -67,7 +67,7 @@ echo '"My Images/DSC-123.JPG" 5 10 600 350' | ./image_crop --suffix "-mod" -rw 1
 Resulting GraphicsMagic call:
 
 ```
-gm convert "My Images/DSC-123.JPG -crop 600x350+5+10 -resize 1080x "My Images/DSC-123-mod.JPG"
+gm convert "My Images/DSC-123.JPG" -crop 600x350+5+10 -resize 1080x "My Images/DSC-123-mod.JPG"
 ```
 
 ## Help
