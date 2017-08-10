@@ -38,7 +38,7 @@ def cli(suffix, resize_width, resize_height):
     reader = csv.reader(sys.stdin, delimiter=' ')
 
     for line in reader:
-        path, x, y, w, h = line
+        path, x, y, w, h = line[:5]
         process(path, x, y, w, h, suffix, resize_width, resize_height)
 
 
