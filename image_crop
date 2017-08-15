@@ -8,8 +8,23 @@ import subprocess
 import click
 
 
-def process(path, x, y, w, h, suffix, resize_width, resize_height):
+def call(cmd):
+    print(' '.join(cmd), file=sys.stderr)
+    subprocess.call(cmd)
+
+
+def process(path,
+            x,
+            y,
+            w,
+            h,
+            suffix,
+            resize_width,
+            resize_height,
+            preserve_timestamp):
     filename, ext = os.path.splitext(path)
+    path_new = '{filename}{suffix}{ext}'.format(
+        filename=filename, suffix=suffix, ext=ext)
     cmd = [
         'gm',
         'convert',
@@ -22,24 +37,32 @@ def process(path, x, y, w, h, suffix, resize_width, resize_height):
             '-resize',
             '{rw}x{rh}'.format(rw=resize_width, rh=resize_height),
         ]
-    cmd += [
-        '{filename}{suffix}{ext}'
-        .format(filename=filename, suffix=suffix, ext=ext),
-    ]
-    print(cmd, file=sys.stderr)
-    subprocess.call(cmd)
+    cmd.append(path_new)
+    call(cmd)
+
+    if preserve_timestamp:
+        call(['touch', '-r', path, path_new])
 
 
 @click.command()
 @click.option('--suffix', '-s', default='__crop')
 @click.option('--resize-width', '-rw', default='')
 @click.option('--resize-height', '-rh', default='')
-def cli(suffix, resize_width, resize_height):
+@click.option('--preserve-timestamp', '-t', is_flag=True)
+def cli(suffix, resize_width, resize_height, preserve_timestamp):
     reader = csv.reader(sys.stdin, delimiter=' ')
 
     for line in reader:
         path, x, y, w, h = line[:5]
-        process(path, x, y, w, h, suffix, resize_width, resize_height)
+        process(path,
+                x,
+                y,
+                w,
+                h,
+                suffix,
+                resize_width,
+                resize_height,
+                preserve_timestamp)
 
 
 if __name__ == '__main__':
